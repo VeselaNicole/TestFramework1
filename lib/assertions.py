@@ -28,4 +28,4 @@ class Assertions:
 
     @staticmethod
     def assert_response_content(response: Response, expected_content):
-        assert response.content.decode("utf-8") == expected_content, f"Response is not equal to expected '{expected_content}'"
+        assert response.content.decode("utf-8") == expected_content, f"Response '{response.content}' is not equal to expected '{expected_content}'"

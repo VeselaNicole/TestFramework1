@@ -19,3 +19,10 @@ class BaseCase:
             assert False, f"Response in not in JSON format. Response text is '{response.text}"
         assert name in response_as_dict, f"Response JSON doesn't have field '{name}'"
         return response_as_dict[name]
+
+    def generate_long_username(self, max_allowed_length):
+        long_username = ""
+        while len(long_username) <= max_allowed_length:
+            long_username += "a"
+
+        return long_username
