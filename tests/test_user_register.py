@@ -31,6 +31,7 @@ class TestUserRegister(BaseCase):
         response = requests.post('https://playground.learnqa.ru/api/user/', data=data)
         Assertions.assert_json_value_by_key(response, "id")
         Assertions.assert_status_code(response, 200)
+        print(response.content)
 
     def test_create_user_with_existing_email(self):
         email = 'vinkotov@example.com'
