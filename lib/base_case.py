@@ -1,4 +1,5 @@
 import json.decoder
+from datetime import datetime
 
 from requests import Response
 
@@ -26,3 +27,17 @@ class BaseCase:
             long_username += "a"
 
         return long_username
+
+    def prepare_registration_data(self, email=None):
+        if email is None:
+            base_part = 'Nicole'
+            domain = 'example.com'
+            random_part = datetime.now().strftime("%m%d%Y%H%M%S")
+            email = f"{base_part}{random_part}@{domain}"
+        return {
+            'password': '1234',
+            'firstName': 'learnqa',
+            'lastName': 'learnqa',
+            'username': 'learnqa',
+            'email': email
+        }
