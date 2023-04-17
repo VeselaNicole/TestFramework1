@@ -1,4 +1,5 @@
 import json.decoder
+import requests
 from datetime import datetime
 
 from requests import Response
@@ -41,3 +42,34 @@ class BaseCase:
             'username': 'learnqa',
             'email': email
         }
+
+    def create_user_and_auth(self):
+        # Register User
+        register_data = self.prepare_registration_data()
+        response1 = requests.post("https://playground.learnqa.ru/api/user/", data=register_data)
+
+        email = register_data["email"]
+        firstName = register_data["firstName"]
+        lastName = register_data["lastName"]
+        password = register_data["password"]
+        username = register_data["username"]
+
+        user_id = self.get_json_value(response1, "id")
+
+        # Login
+        login_data = {
+            "email": email,
+            "password": password
+        }
+        response2 = requests.post("https://playground.learnqa.ru/api/user/login", data=login_data)
+        auth_sid = self.get_cookie(response2, "auth_sid")
+        token = self.get_header(response2, "x-csrf-token")
+        result = dict()
+        result["user_id"] = user_id
+        result["auth_sid"] = auth_sid
+        result["x-csrf-token"] = token
+        result["email"] = email
+        result["firstName"] = firstName
+
+        return result
+
