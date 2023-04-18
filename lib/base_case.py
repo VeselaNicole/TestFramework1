@@ -1,5 +1,5 @@
 import json.decoder
-import requests
+from lib.my_requests import MyRequests
 from datetime import datetime
 
 from requests import Response
@@ -46,7 +46,7 @@ class BaseCase:
     def create_user_and_auth(self):
         # Register User
         register_data = self.prepare_registration_data()
-        response1 = requests.post("https://playground.learnqa.ru/api/user/", data=register_data)
+        response1 = MyRequests.post("/user/", data=register_data)
 
         email = register_data["email"]
         firstName = register_data["firstName"]
@@ -61,7 +61,7 @@ class BaseCase:
             "email": email,
             "password": password
         }
-        response2 = requests.post("https://playground.learnqa.ru/api/user/login", data=login_data)
+        response2 = MyRequests.post("/user/login", data=login_data)
         auth_sid = self.get_cookie(response2, "auth_sid")
         token = self.get_header(response2, "x-csrf-token")
         result = dict()

@@ -1,5 +1,5 @@
 import pytest
-import requests
+from lib.my_requests import MyRequests
 from lib.base_case import BaseCase
 from lib.assertions import Assertions
 
@@ -17,24 +17,22 @@ class TestUserRegister(BaseCase):
     def test_create_user_successfully(self):
         data = self.prepare_registration_data()
 
-        response = requests.post('https://playground.learnqa.ru/api/user/', data=data)
+        response = MyRequests.post('/user/', data=data)
         Assertions.assert_json_value_by_key(response, "id")
         Assertions.assert_status_code(response, 200)
-        print(response.content)
 
     def test_create_user_with_existing_email(self):
         email = 'vinkotov@example.com'
         data = self.prepare_registration_data(email)
 
-        response = requests.post('https://playground.learnqa.ru/api/user/', data=data)
+        response = MyRequests.post('/user/', data=data)
         Assertions.assert_status_code(response, 400)
         assert response.content.decode("utf-8") == f"Users with email '{email}' already exists"
 
     def test_create_user_with_incorrect_email(self):
         data = self.prepare_registration_data()
         data["email"] = data["email"].replace("@", "")
-        print(data)
-        response = requests.post('https://playground.learnqa.ru/api/user/', data=data)
+        response = MyRequests.post('/user/', data=data)
         Assertions.assert_status_code(response, 400)
         Assertions.assert_response_content(response, 'Invalid email format')
 
@@ -44,27 +42,23 @@ class TestUserRegister(BaseCase):
         if condition == "no_password":
             data = self.prepare_registration_data()
             del data["password"]
-            print(data)
         if condition == "no_firstName":
             data = self.prepare_registration_data()
             del data["firstName"]
-            print(data)
         if condition == "no_lastName":
             data = self.prepare_registration_data()
             del data["lastName"]
-            print(data)
 
         if condition == "no_username":
             data = self.prepare_registration_data()
             del data["username"]
-            print(data)
 
         if condition == "no_email":
             data = self.prepare_registration_data()
             del data["email"]
-            print(data)
 
-        response = requests.post('https://playground.learnqa.ru/api/user/', data=data)
+
+        response = MyRequests.post('/user/', data=data)
 
         Assertions.assert_status_code(response, 400)
         Assertions.assert_response_content(response, expected_result)
@@ -74,7 +68,7 @@ class TestUserRegister(BaseCase):
         short_username = "n"
         data = self.prepare_registration_data()
         data["username"] = short_username
-        response = requests.post('https://playground.learnqa.ru/api/user/', data=data)
+        response = MyRequests.post('/user/', data=data)
         Assertions.assert_status_code(response, 400)
         Assertions.assert_response_content(response, "The value of 'username' field is too short")
 
@@ -86,6 +80,6 @@ class TestUserRegister(BaseCase):
         long_username = self.generate_long_username(username_max_length)
         data = self.prepare_registration_data()
         data["username"] = long_username
-        response = requests.post('https://playground.learnqa.ru/api/user/', data=data)
+        response = MyRequests.post('/user/', data=data)
         Assertions.assert_status_code(response, 400)
         Assertions.assert_response_content(response, "The value of 'username' field is too long")
