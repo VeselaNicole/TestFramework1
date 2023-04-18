@@ -1,5 +1,4 @@
 import requests
-import time
 from lib.base_case import BaseCase
 from lib.assertions import Assertions
 
@@ -97,7 +96,6 @@ class TestUserEdit(BaseCase):
         auth_sid = self.get_cookie(response2, "auth_sid")
         token = self.get_header(response2, "x-csrf-token")
 
-        time.sleep(60)
         #register another user
         register_data = self.prepare_registration_data()
         response3 = requests.post("https://playground.learnqa.ru/api/user/", data=register_data)
@@ -134,6 +132,11 @@ class TestUserEdit(BaseCase):
         Assertions.assert_status_code(response, 400)
         Assertions.assert_response_content(response, "Invalid email format")
 
+        response2 = requests.get(f"https://playground.learnqa.ru/api/user/{user_id}", headers={"x-csrf-token": token},
+                                 cookies={"auth_sid": auth_sid}, )
+        initial_email = authorization_data["email"]
+        Assertions.assert_json_value_by_name(response2, "email", initial_email,
+                                             "Field value has changed to invalid")
 
     def test_user_edit_short_first_name(self):
         authorization_data = self.create_user_and_auth()
