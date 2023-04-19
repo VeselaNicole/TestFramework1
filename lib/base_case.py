@@ -65,11 +65,11 @@ class BaseCase:
         auth_sid = self.get_cookie(response2, "auth_sid")
         token = self.get_header(response2, "x-csrf-token")
         result = dict()
-        result["user_id"] = user_id
-        result["auth_sid"] = auth_sid
-        result["x-csrf-token"] = token
-        result["email"] = email
-        result["firstName"] = firstName
+        result['user_id'] = user_id
+        result['auth_sid'] = auth_sid
+        result['x-csrf-token'] = token
+        result['email'] = email
+        result['firstName'] = firstName
 
         return result
 
