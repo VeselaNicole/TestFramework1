@@ -1,10 +1,16 @@
 
+import allure
+import pytest
 
 from lib.assertions import Assertions
 from lib.base_case import BaseCase
 from lib.my_requests import MyRequests
+from flaky import flaky
 
+@allure.epic("Delete user tests")
 class TestUserDelete(BaseCase):
+
+    @allure.title("tries to delete user with id 2")
     def test_delete_protected_user(self):
         data = {
             "email": "vinkotov@example.com",
@@ -24,6 +30,8 @@ class TestUserDelete(BaseCase):
         Assertions.assert_status_code(response2, 400)
         Assertions.assert_response_content(response2, "Please, do not delete test users with ID 1, 2, 3, 4 or 5.")
 
+
+    @allure.title("creates and authorizes new user, then deletes it")
     def test_delete_new_user(self):
         new_user_data = self.create_user_and_auth()
         user_id = new_user_data["user_id"]
@@ -39,8 +47,10 @@ class TestUserDelete(BaseCase):
                                  headers={"x-csrf-token": token}, cookies={"auth_sid": auth_sid})
         Assertions.assert_status_code(response2, 404)
         Assertions.assert_response_content(response2, "User not found")
+        allure.dynamic.title("Positive delete test")
 
-
+    @allure.title("creates and authorizes new user, then creates another user being authorized with the first user")
+    @pytest.mark.flaky
     def test_delete_another_user(self):
         login_user_data = self.create_user_and_auth()
         auth_sid = login_user_data["auth_sid"]

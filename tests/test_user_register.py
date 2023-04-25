@@ -1,9 +1,10 @@
 import pytest
+import allure
 from lib.my_requests import MyRequests
 from lib.base_case import BaseCase
 from lib.assertions import Assertions
 
-
+@allure.epic("User registration tests")
 class TestUserRegister(BaseCase):
     exclude_params = [
         ("no_password"),
@@ -14,6 +15,8 @@ class TestUserRegister(BaseCase):
     ]
 
 
+    @allure.title("Positive user registration")
+    @pytest.mark.smoke_test
     def test_create_user_successfully(self):
         data = self.prepare_registration_data()
 
@@ -21,6 +24,7 @@ class TestUserRegister(BaseCase):
         Assertions.assert_json_value_by_key(response, "id")
         Assertions.assert_status_code(response, 200)
 
+    @allure.title("Negative registration with existing email")
     def test_create_user_with_existing_email(self):
         email = 'vinkotov@example.com'
         data = self.prepare_registration_data(email)
@@ -29,6 +33,7 @@ class TestUserRegister(BaseCase):
         Assertions.assert_status_code(response, 400)
         assert response.content.decode("utf-8") == f"Users with email '{email}' already exists"
 
+    @allure.title("Negative registration with incorrect email")
     def test_create_user_with_incorrect_email(self):
         data = self.prepare_registration_data()
         data["email"] = data["email"].replace("@", "")
@@ -36,6 +41,7 @@ class TestUserRegister(BaseCase):
         Assertions.assert_status_code(response, 400)
         Assertions.assert_response_content(response, 'Invalid email format')
 
+    @allure.title("Negative registration with missing parameter")
     @pytest.mark.parametrize("condition", exclude_params)
     def test_create_user_without_field(self, condition):
         expected_result = f"The following required params are missed: {condition[3:]}"
@@ -64,6 +70,7 @@ class TestUserRegister(BaseCase):
         Assertions.assert_response_content(response, expected_result)
 
 
+    @allure.title("Negative registration with short username")
     def test_username_min_length(self):
         short_username = "n"
         data = self.prepare_registration_data()
@@ -72,10 +79,9 @@ class TestUserRegister(BaseCase):
         Assertions.assert_status_code(response, 400)
         Assertions.assert_response_content(response, "The value of 'username' field is too short")
 
-
+    @allure.title("Negative registration with long username")
     def test_username_max_length(self):
-
-
+        raise Exception("Sorry, it's broken")
         username_max_length = 250
         long_username = self.generate_long_username(username_max_length)
         data = self.prepare_registration_data()

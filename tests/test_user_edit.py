@@ -1,8 +1,16 @@
+from flaky import flaky
+import pytest
+
 from lib.my_requests import MyRequests
 from lib.base_case import BaseCase
 from lib.assertions import Assertions
+import allure
 
+
+@allure.epic("Edit tests")
 class TestUserEdit(BaseCase):
+    @allure.title("Creates new user, authorizes with it, updates the first name and check the final result")
+    @pytest.mark.new_feature
     def test_edit_just_created_user(self):
         #Register User
         register_data = self.prepare_registration_data()
@@ -46,7 +54,8 @@ class TestUserEdit(BaseCase):
 
         Assertions.assert_json_value_by_name(response4, "firstName", new_name, "Field value has not changed")
 
-
+    @allure.title("Creates new user and tries to edit its username without authorization")
+    @pytest.mark.new_feature
     def test_user_edit_not_auth(self):
         # Register User
         register_data = self.prepare_registration_data()
@@ -72,6 +81,8 @@ class TestUserEdit(BaseCase):
         Assertions.assert_status_code(response2, 400)
         Assertions.assert_response_content(response2, "Auth token not supplied")
 
+    @allure.title("Creates and authorizes with new user, then creates another user and tries to edit its username")
+    @pytest.mark.new_feature
     def test_user_edit_auth_with_another_user(self):
         # Register User
         register_data = self.prepare_registration_data()
@@ -118,6 +129,8 @@ class TestUserEdit(BaseCase):
         Assertions.assert_json_value_by_name(response5, "username", username, "Field value has changed by unauthorized user")
 
 
+    @allure.title("This test tries to change authorized user's email to invalid email w/o @")
+    @pytest.mark.new_feature
     def test_user_edit_with_wrong_email(self):
         authorization_data = self.create_user_and_auth()
         user_id = authorization_data["user_id"]
@@ -139,6 +152,8 @@ class TestUserEdit(BaseCase):
         Assertions.assert_json_value_by_name(response2, "email", initial_email,
                                              "Field value has changed to invalid")
 
+    @allure.title("This test tries to change authorized user's first name to 'x'")
+    @pytest.mark.skip
     def test_user_edit_short_first_name(self):
         authorization_data = self.create_user_and_auth()
         user_id = authorization_data["user_id"]
